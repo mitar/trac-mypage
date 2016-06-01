@@ -1,4 +1,5 @@
 import trac
+from trac.config import Option
 from trac.core import *
 from trac.util.html import html
 from trac.web import IRequestHandler
@@ -9,6 +10,13 @@ from trac.perm import IPermissionRequestor, IPermissionPolicy
 
 class MyPagePlugin(Component):
 	trac.core.implements(INavigationContributor, IRequestHandler, IPermissionRequestor)
+
+	url = Option('mypage', 'url', 'wiki/u/%s',
+		"""URL template for user pages.
+		
+		Placeholder '%s' is repalced with the username of an user.""",
+	)
+
 
 	# INavigationContributor methods
 	def get_active_navigation_item(self, req):
@@ -47,7 +55,7 @@ class MyPagePlugin(Component):
 
 	# public methods
 	def mypage_url(self, req):
-		url = self.config.get('mypage', 'url')
+		url = self.url
 		if '%' in url:
 			url = url % req.authname
 		return url
